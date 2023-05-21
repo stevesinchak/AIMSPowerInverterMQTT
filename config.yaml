@@ -1,0 +1,15 @@
+#This is the correct port for a Raspberry Pi Zero W but may need to be updated if using a different device
+serialPort: /dev/ttyAMA0
+
+mqttHost: 0.0.0.0
+mqttPort: 1883
+
+mqttUser: user
+mqttPass: password
+
+expireAfter: 600
+baseTopic: AimsPower
+
+#Customize the following for your specific model but be careful not to alter the JSON formatting
+modelTopic: Aims1250PowerInverter
+deviceDetailsJSON: '{"identifiers": "Aims1250PowerInverter", "manufacturer": "AIMS Power", "model": "PICOGLF12W12V120AL", "name": "AIMS 1250W Power Inverter", "sw_version": "1.0"}'
