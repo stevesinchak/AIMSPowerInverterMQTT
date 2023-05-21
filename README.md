@@ -73,15 +73,20 @@ UPS Status : <U>
 Now that I knew how to get data out of the AIMS Power inverter via the RJ-45 interface serial port, I decided to build the automated solution using a Raspberry Pi Zero W since it is a cheap device that has a both Wi-Fi which is required to talk to my Home Assistant MQTT server and a hardware UART/serial controller with designated pins that would make talking to the AIMS Power inverter easy using Python.  The only catch I needed to solve for was a voltage problem between the Raspberry Pi operates at 3.3 volts and the inverter serial port operates at 5 volts. Connecting the 5v inverter serial port to the Raspberry Pi directly would fry the pi so a bi-directional multi-channel logic level converter is required between the devices (see required hardware below) so they play nice together. 
 
 # Required Hardware & Software
-- Raspberry Pi Zero W or other version of Raspberry PI
+- Compatible AIMS Power Inverter (what I purchased and I know works [PICOGLF12W12V120AL](https://amzn.to/41PUYct))
+- Raspberry Pi Zero W or other version of Raspberry Pi
 - Spare RJ-45 ethernet cord you don't mind destroying to make your custom cable
 - At least a two channel 3.3V-5V Logic Level Converter ([Anmbest 4 channel on Amazon](https://amzn.to/45kIo7R) is what I used)
-- Soldering Iron 
+- Soldering Iron to solder on pin headers. 
 - Existing Home Assistant install with MQTT configured.  
+
+*Links to products may be affiliate links that may pay me a commission.*  
 
 # Hardware Build Instructions
 
 These instructions will walk you through, at a high level, what is needed to physically connect the Raspberry Pi Zero W to the AIMS Power inverter.  
+
+![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired.jpg)
 
 TODO: draw schematic 
 
@@ -130,7 +135,7 @@ cd /opt/AIMSPowerInverterMQTT
 # Install Python dependencies 
 pip3 install -r requirements.txt
 ``` 
-Now it is time to fill in the config.yaml file with the specifics for your install.  Edit the file with `sudo nano config.yaml` and set the IP address of your MQTT Home Assistant host and the proper user/pass for authentication and save the file with Control + O followed by Enter and you can exit the editor with Control + X. 
+Now it is time to fill in the config.yaml file with the specifics for your install.  Edit the file with `sudo nano /opt/AIMSPowerInverterMQTT/config.yaml` and set the IP address of your MQTT Home Assistant host and the proper user/pass for authentication and save the file with Control + O followed by Enter and you can exit the editor with Control + X. 
 
 ```yaml
 #This is the correct port for a Raspberry Pi Zero W but may need to be updated if using a different device
@@ -153,5 +158,18 @@ deviceDetailsJSON: '{"identifiers": "Aims1250PowerInverter", "manufacturer": "AI
 
 Before proceeding, let's make sure everything was configured and is running properly. Simply run `python3 /opt/AIMSPowerInverterMQTT/GetInverterData.py` from any path and verify there are no exceptions or errors and that you see your inverter device being auto-discovered in Home Assistant.  If you are having problems, make sure your info in the config.yaml is set properly and you can also use the included SerialTest.py script to validate the serial port aspect of the app alone by running `python3 /opt/AIMSPowerInverterMQTT/SerialTest.py`.  
 
-### Scheduling with Chron 
+### Scheduling with Cron
 
+We will use Cron to automatically run the Python app every few minutes to capture new data from the inverter and send it to Home Assistant.  Cron is usually automatically installed on Raspbian but you can make sure by running the following:
+
+```bash
+sudo apt-get install cron
+sudo systemctl enable cron
+```
+Next, let's configure Cron to run our app every two minutes.  Get started by typing in `crontab -e` and hit enter. If this is the first time you are running crontab, you will be asked to select an editor (I suggest option 1 which is nano). Add the following to the bottom of your crontab file to make it run every two minutes:
+```bash
+*/2 * * * * python3 /opt/AIMSPowerInverterMQTT/GetInverterData.py
+```
+If you would like to run your job at a different interval, check out the [crontab guru examples](https://crontab.guru/examples.html) site. Remember to hit control + O to save and control + x to quit. 
+
+Cron jobs will run silently in the background, but to help with monitoring this app logs to syslog as well so you can monitor this app by running `tail -f /var/log/syslog` on most systems. 
