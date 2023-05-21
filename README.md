@@ -4,6 +4,8 @@ This project was created to automatically monitor the [AIMS Power 1250W Power In
 
 The inverter and battery data published to Home Assistant can be used to create [custom automations](https://www.home-assistant.io/getting-started/automation/) to send notifications and take actions on other devices integrated into the [Home Assistant ecosystem](https://www.home-assistant.io/integrations/) such as automatically powering down devices when the inverter battery is low.
 
+![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/screenshot.jpg)
+
 The following data will be available in Home Assistant via an auto-discovered MQTT device once this app is fully setup and configured according to the instructions below:
 
 - Battery Status (OK/Low)
