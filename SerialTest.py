@@ -1,7 +1,11 @@
 import serial
+import yaml
 
 try:
-    serialPort = serial.Serial("/dev/ttyAMA0", baudrate=2400, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+    with open('config.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+    
+    serialPort = serial.Serial(config["serialPort"], baudrate=2400, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
     serialDataText = "Q1\n".encode("ascii")
     print ("Sending:",serialDataText)
     serialPort.write(serialDataText)

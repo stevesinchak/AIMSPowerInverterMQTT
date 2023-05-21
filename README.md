@@ -28,13 +28,13 @@ The following data will be available in Home Assistant via an auto-discovered MQ
 
 # The Quest to Automate Equipment Shutdowns
 
-An AIMS power inverter combined with a large marine battery is a great way build your own UPS/battery backup that has significantly more capacity than your average APC, Tripp Lite, or CyberPower retail models to protect your home gear. The only problem is unlike packaged commercial UPS products, there is not an easy way to monitor battery health during a power outage to know when the battery is running low. This is a useful feature of commercial products that safely powers down your equipment before the battery is depleted to avoid major data integrity problems.  
+An AIMS power inverter combined with a large marine battery is a great way build your own UPS/battery backup that has significantly more capacity than your average APC, Tripp Lite, or CyberPower retail models to protect your home gear. The only problem is unlike packaged commercial UPS products, there is not an easy way to monitor battery health during a power outage to know when the battery is running low. This is a useful feature of commercial products that can allow you to safely power down your equipment before the battery is depleted to avoid data integrity problems.  
 
-After a long power outage and subsequent sudden power loss upon battery depletion caused problems with my gear, I was determined to find a solution to monitor the status of my custom UPS system so everything could shut down gracefully before the battery was fully depleted. After much googling, I found the RJ45 pin-out and serial protocol for an AIMS power inverter on the [Solar, Wind, and Battery Systems forum](https://secondlifestorage.com/index.php?threads/aims-lf-inverter-rj45-protocol-information.10348/). This was for a different model than I owned, but I figured it was worth exploring. 
+After a long power outage and sudden power loss caused by an empty battery created problems with my gear, I was determined to find a solution to monitor the status of my custom UPS system so everything could shut down gracefully before the battery was fully depleted. After much googling, I found the RJ45 pin-out and serial protocol for an AIMS power inverter on the [Solar, Wind, and Battery Systems forum](https://secondlifestorage.com/index.php?threads/aims-lf-inverter-rj45-protocol-information.10348/). This was for a different model than what I own, but I figured it was worth exploring. 
 
 ## Proof of Concept
 
-I dug up my [USB serial port adapter](https://amzn.to/3oi3RO4) and cut up an old patch cable to wire up the pins according to the spec and magically it worked! I simply typed in `Q1`,hit Enter and the inverter returned:
+Using a [USB serial port adapter](https://amzn.to/3oi3RO4) and an old patch cable that was cut up and wired according to the AIMS Power specifications it worked! I simply typed in `Q1`,hit Enter and the inverter returned:
 ```
  (111.0 111.0 112.0 000 60.0 13.5 00.0 00001001
  ```  
@@ -85,9 +85,9 @@ These instructions will walk you through, at a high level, what is needed to phy
 
 TODO: draw schematic 
 
-# Software Build & Configuration Instructions
+# Software Installation & Configuration
 
-## Configuring the Raspberry Pi
+## Configure the Raspberry Pi Zero W
 
 Some prep work is needed to disable bluetooth so the UART controller can be fully utilized on the Raspberry Pi Zero W and potentially other Raspberry Pi models. These instructions will assume you already have a fully configured and updated Raspberry Pi Zero W that you can SSH into.  
 
@@ -104,22 +104,54 @@ dtoverlay=disable-bt
 
 When the system is back up, make sure `/dev/serial0` is mapped to `ttyAMA0` by running `ls -l /dev/serial*` as shown below:
 
-``` 
+``` bash
 ls -l /dev/serial*
 lrwxrwxrwx 1 root root 7 Apr 30 21:03 /dev/serial0 -> ttyAMA0   <--- Good
 lrwxrwxrwx 1 root root 5 Apr 30 21:03 /dev/serial1 -> ttyS0
 ``` 
 
-## Configuring and installing this App
+## Core Software Installation & Configuration
 
-Install python3 pip and git
+Run the following commands (ignoring the comments) to install the necessary dependencies and core app from the GitHub repository. 
 
-sudo apt-get install python3-pip git
+```bash
+# Install system dependencies 
+sudo apt-get install python3 python3-pip git
 
-Clone git repo
+# Move to /opt directory
+cd /opt
 
-install python dependencies via requirements.txt
+# Clone the repository which will copy the app to /opt/AIMSPowerInverterMQTT
+sudo git clone https://github.com/stevesinchak/AIMSPowerInverterMQTT.git
+
+# Move to the /opt/AIMSPowerInverterMQTT directory
+cd /opt/AIMSPowerInverterMQTT
+
+# Install Python dependencies 
 pip3 install -r requirements.txt
+``` 
+Now it is time to fill in the config.yaml file with the specifics for your install.  Edit the file with `sudo nano config.yaml` and set the IP address of your MQTT Home Assistant host and the proper user/pass for authentication and save the file with Control + O followed by Enter and you can exit the editor with Control + X. 
 
+```yaml
+#This is the correct port for a Raspberry Pi Zero W but may need to be updated if using a different device
+serialPort: /dev/ttyAMA0
 
+mqttHost: 0.0.0.0
+mqttPort: 1883
+
+mqttUser: user
+mqttPass: password
+
+expireAfter: 600
+baseTopic: AimsPower
+
+#Customize the following for your specific model but be careful not to alter the JSON formatting
+modelTopic: Aims1250PowerInverter
+deviceDetailsJSON: '{"identifiers": "Aims1250PowerInverter", "manufacturer": "AIMS Power", "model": "PICOGLF12W12V120AL", "name": "AIMS 1250W Power Inverter", "sw_version": "1.0"}'
+```  
+### Validation Testing
+
+Before proceeding, let's make sure everything was configured and is running properly. Simply run `python3 /opt/AIMSPowerInverterMQTT/GetInverterData.py` from any path and verify there are no exceptions or errors and that you see your inverter device being auto-discovered in Home Assistant.  If you are having problems, make sure your info in the config.yaml is set properly and you can also use the included SerialTest.py script to validate the serial port aspect of the app alone by running `python3 /opt/AIMSPowerInverterMQTT/SerialTest.py`.  
+
+### Scheduling with Chron 
 
