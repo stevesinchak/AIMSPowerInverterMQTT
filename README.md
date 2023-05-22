@@ -84,11 +84,15 @@ Now that I knew how to get data out of the AIMS Power inverter via the RJ-45 int
 
 # Hardware Build Instructions
 
-These instructions will walk you through, at a high level, what is needed to physically connect the Raspberry Pi Zero W to the AIMS Power inverter.  
+Below you will find the schematic to wire up the Raspberry Pi to the 3.3v to 5v logic level converter and then to the RJ-45 module that wil be inserted into the side of the AIMS power inverter. The Raspberry Pi pins should work on any modern raspberry pi with a 40 pin header.  I chose to solder a pin header to both the logic level converter and the Raspberry Pi Zero W so I could use standard Dupont cable connectors on the pins.  Alternatively, you can solder the wires directly to the contacts on the boards. 
+
+![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired-schematic.jpg)
+
+A picture of the finished circuit (pay no attention to the color of the wires as they do not match the schematic).  
 
 ![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired.jpg)
 
-TODO: draw schematic 
+
 
 # Software Installation & Configuration
 
