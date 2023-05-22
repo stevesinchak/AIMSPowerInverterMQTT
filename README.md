@@ -68,7 +68,7 @@ UPS Status : <U>
   1 1 : Shutdown Active 
   0 1 : Beeper On
 ``` 
-## Time To Build
+## Time to Build
 
 Now that I knew how to get data out of the AIMS Power inverter via the RJ-45 interface serial port, I decided to build the automated solution using a Raspberry Pi Zero W since it is a cheap device that has a both Wi-Fi which is required to talk to my Home Assistant MQTT server and a hardware UART/serial controller with designated pins that would make talking to the AIMS Power inverter easy using Python.  The only catch I needed to solve for was a voltage problem between the Raspberry Pi operates at 3.3 volts and the inverter serial port operates at 5 volts. Connecting the 5v inverter serial port to the Raspberry Pi directly would fry the pi so a bi-directional multi-channel logic level converter is required between the devices (see required hardware below) so they play nice together. 
 
@@ -86,13 +86,20 @@ Now that I knew how to get data out of the AIMS Power inverter via the RJ-45 int
 
 Below you will find the schematic to wire up the Raspberry Pi to the 3.3v to 5v logic level converter and then to the RJ-45 module that wil be inserted into the side of the AIMS power inverter. The Raspberry Pi pins should work on any modern raspberry pi with a 40 pin header.  I chose to solder a pin header to both the logic level converter and the Raspberry Pi Zero W so I could use standard Dupont cable connectors on the pins.  Alternatively, you can solder the wires directly to the contacts on the boards. 
 
-![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired-schematic.jpg)
+![Schematic](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired-schematic.jpg)
 
 A picture of the finished circuit (pay no attention to the color of the wires as they do not match the schematic).  
 
 ![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/wired.jpg)
 
+Plug your custom cable into the RJ-45 jack that is labeled LCD Remote Only: 
 
+![Inverter Port](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/AIMSPowerRJ45Port.jpg)
+
+This was built using the specifications found on the [Solar, Wind, and Battery Systems forum](https://secondlifestorage.com/index.php?threads/aims-lf-inverter-rj45-protocol-information.10348/). Backup reference copies have been included in this repo:
+ 
+- [InverterSerialSpec.pdf](https://github.com/stevesinchak/AIMSPowerInverterMQTT/blob/main/InverterSerialSpec.pdf)
+- [InverterSerialSpec.png](https://github.com/stevesinchak/AIMSPowerInverterMQTT/blob/main/InverterSerialSpec.png)
 
 # Software Installation & Configuration
 
