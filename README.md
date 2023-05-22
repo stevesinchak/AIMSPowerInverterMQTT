@@ -184,3 +184,9 @@ Next, let's configure Cron to run our app every two minutes.  Get started by typ
 If you would like to run your job at a different interval, check out the [crontab guru examples](https://crontab.guru/examples.html) site. Remember to hit control + O to save and control + x to quit. 
 
 Cron jobs will run silently in the background, but to help with monitoring this app logs to syslog as well so you can monitor this app by running `tail -f /var/log/syslog` on most systems. 
+
+# Building an Automation in Home Assistant
+
+Now that we have data flowing to Home Assistant every two minutes, it is very easy to create an automation to send you a notification or call other services to power down electronics or more.  On the main device page, just hit the plus icon in the "Automations" section to start building your first automation with this device. Please refer to the official Home Assistant documentation for building an [automation](https://www.home-assistant.io/getting-started/automation/) and integrating [devices](https://www.home-assistant.io/integrations/).
+
+![Screenshot](https://raw.githubusercontent.com/stevesinchak/AIMSPowerInverterMQTT/main/screenshot.jpg)
