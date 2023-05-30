@@ -112,9 +112,10 @@ Some prep work is needed to disable bluetooth so the UART controller can be full
 sudo systemctl disable hciuart.service
 sudo systemctl disable bluetooth.service
 ``` 
-2. Edit `/boot/config.txt` and add the following line:
+2. Edit `/boot/config.txt` and add the following lines at the end of the file:
 ``` 
 dtoverlay=disable-bt
+enable_uart=1
 ``` 
 3. Reboot the Pi Zero W. 
 
