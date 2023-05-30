@@ -10,8 +10,8 @@ def log(message):
     syslog.syslog(message)  
 
 log("AIMSPowerInverterMQTT by Steve Sinchak")
-log("Opening config.yaml file")
-with open('config.yaml', 'r') as f:
+log("Opening config.yaml file at /opt/AIMSPowerInverterMQTT")
+with open('/opt/AIMSPowerInverterMQTT/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
     log("Config file loaded!")
 
